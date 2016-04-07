@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=windows-1250">
+  <meta name="generator" content="PSPad editor, www.pspad.com">
+  <title>Asteroids</title>
+  <style>
+    body, html {margin: 0; padding: 0}
+    #fields {
+      position: fixed;
+      top: 5px;
+      left: 50x;
+      color: white;
+      font-family: 'Courier new';
+    }
+    #fields input[type="text"] {
+      background-color: rgba(0,0,0,0.5);
+      color: white;
+      border: 1px solid #BBB;
+    }
+  </style>
+  </head>
+  <body>
+  <table id="fields">
+    <tr><td>Game speed:</td><td><input type="text" value="5000" id="speedRatio" /></td></tr>
+    <tr><td>New object velocity ratio:</td><td><input type="text" value="1" id="velocity" /></td></tr>
+    <tr><td>New object mass:</td><td><input type="text" value="50000" id="mass" /></td></tr>
+  </table>
+   <script type="text/javascript" src="pixi.js"></script>
+   <script type="text/javascript" src="GravityWell.js"></script>
+   <script type="text/javascript" src="Spaceship.js"></script>
+   <script type="text/javascript" src="Projectile.js"></script>
+   <script type="text/javascript" src="test.js"></script>
+   
+  </body>
+</html>

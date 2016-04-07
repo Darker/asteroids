@@ -1,0 +1,53 @@
+[Config]
+Compilator.SaveAll=0
+Compilator.Capture=0
+Compilator.HideOutput=0
+Compilator.ProgSaveAll=0
+Compilator.ProgRunSelection=0
+Compilator.LogType=0
+DefaultCPIndex=0
+LogtoEnd=1
+DontOpen=0
+AbsolutePath=0
+FileFormat=0
+ProjectFilesOnly=0
+[Project tree]
+Nový projekt
+	+Složka
+		simulator.js
+[Open project files]
+0=test.js
+1=simulator.js
+2=GravityWell.js
+3=main.js
+4=index.html
+5=Spaceship.js
+6=Projectile.js
+7=ObjectManager.js
+[Selected Project Files]
+Main=
+Selected=test.js
+[test.js]
+TopLine=117
+Caret=105,134
+[simulator.js]
+TopLine=261
+Caret=62,284
+[GravityWell.js]
+TopLine=23
+Caret=37,54
+[main.js]
+TopLine=1
+Caret=1,1
+[index.html]
+TopLine=1
+Caret=4,32
+[Spaceship.js]
+TopLine=1
+Caret=27,10
+[Projectile.js]
+TopLine=1
+Caret=106,25
+[ObjectManager.js]
+TopLine=1
+Caret=31,31
