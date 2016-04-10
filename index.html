@@ -4,6 +4,7 @@
   <meta http-equiv="content-type" content="text/html; charset=windows-1250">
   <meta name="generator" content="PSPad editor, www.pspad.com">
   <title>Asteroids</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/codemirror.css" />
   <style>
     body, html {margin: 0; padding: 0}
     #fields {
@@ -18,19 +19,112 @@
       color: white;
       border: 1px solid #BBB;
     }
+    #fields td span {
+      pointer-events: none;
+    }
+    
+    div#editor {
+      opacity: 0.3;
+      position: fixed;
+      top:0px;
+      right:0px;
+      border: 2px solid gray;
+      width: 410px;
+    }
+    
+    div#editor div.dragArea {
+      cursor: move;
+      color: white;
+      background: #999;
+    }
+    div#editor:hover {
+      opacity: 1;
+    }
+.CodeMirror {
+  height: 440px;
+}
+    
   </style>
+  
+
   </head>
   <body>
   <table id="fields">
-    <tr><td>Game speed:</td><td><input type="text" value="5000" id="speedRatio" /></td></tr>
-    <tr><td>New object velocity ratio:</td><td><input type="text" value="1" id="velocity" /></td></tr>
-    <tr><td>New object mass:</td><td><input type="text" value="50000" id="mass" /></td></tr>
+    <tr><td><span>Game speed:</span></td><td><input type="text" value="5000" id="speedRatio" /></td></tr>
+    <tr><td><span>New object velocity ratio:</span></td><td><input type="text" value="1" id="velocity" /></td></tr>
+    <tr><td><span>New object mass:</span></td><td><input type="text" value="50000" id="mass" /></td></tr>
   </table>
+  
+  <div id="editor">
+  <div class="dragArea">The bounce function</div>
+  <textarea id="code" name="code"></textarea>
+  </div>
+
+   <!--
    <script type="text/javascript" src="pixi.js"></script>
    <script type="text/javascript" src="GravityWell.js"></script>
    <script type="text/javascript" src="Spaceship.js"></script>
    <script type="text/javascript" src="Projectile.js"></script>
    <script type="text/javascript" src="test.js"></script>
-   
+   -->
+   <!-- I wanted to use requirejs to load this gorram' crap but the crap won't frakkin' load. -->
+       <!-- -->
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/codemirror.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/mode/javascript/javascript.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/comment/continuecomment.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/edit/matchbrackets.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/comment/comment.js"></script> 
+  <script>
+  
+  (()=>{
+        var editor = window.editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+          lineNumbers: true,
+          matchBrackets: true,
+          continueComments: "Enter",
+          extraKeys: {"Ctrl-Q": "toggleComment"},
+          //viewportMargin: Infinity
+        });
+        if(localStorage["savedfn"]) {
+          editor.setValue(localStorage["savedfn"]); 
+        } else {
+          var oReq = new XMLHttpRequest();
+          oReq.addEventListener("load", function() {
+            console.log((/SRC_START\n([\s\S]*?)\n\/\/SRC_END/i).exec(this.responseText));
+            editor.setValue(this.responseText);
+          });
+          oReq.open("GET", "bounce_function.js");
+          oReq.send();
+        }
+  })();
+  
+  var dragPoint = null;
+  var dragOriginalPosition = null;
+  var div = document.querySelector("#editor");
+  // this stinks a lot but I'm lazy and this is just for testing
+  // You know I probably coukld've used jquery UI for making dragable editor
+  // if I had 10 hours to get it running...
+  window.addEventListener("mousemove", function(e) {
+    if(dragPoint) {
+      div.style.left = (dragOriginalPosition[0]+(e.clientX-dragPoint[0])) +"px";
+      div.style.top  = (dragOriginalPosition[1]+(e.clientY-dragPoint[1])) +"px";
+    }
+  });
+  window.addEventListener("mouseout", function(e) {
+    if(e.target==null)
+      dragPoint = dragOriginalPosition = null;
+  });
+  window.addEventListener("mouseup", function(e) {
+    dragPoint = dragOriginalPosition = null;
+  });
+  
+  document.querySelector("#editor div.dragArea").addEventListener("mousedown", function(e) {
+    dragOriginalPosition = [div.getBoundingClientRect().left, div.getBoundingClientRect().top];
+    dragPoint = [e.clientX, e.clientY]; 
+    e.preventDefault();
+    return false;
+  });
+  
+  </script>                                                                 <!--   --> 
+  <script type="text/javascript" data-main="test.js" src="require.js"></script>    
   </body>
 </html>

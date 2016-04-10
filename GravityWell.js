@@ -70,10 +70,13 @@ define([], function() {
     //this.sprite.rotation = direction+Math.PI/2;
   }
   GravityWell.prototype.consume = function(object) {
-    if(object instanceof Projectile) {
+    if(object.isProjectile) {
       this.mass -= 10000000;
       this.vx += object.vx/(this.mass);
       this.vy += object.vy/(this.mass);
+      if(this.isProjectile && object.mass>0) {
+        object.consume(this);
+      }
     }
     else {
       var total = object.mass+this.mass;
