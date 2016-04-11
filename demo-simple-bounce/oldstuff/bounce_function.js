@@ -5,26 +5,23 @@ define(['GravityWell', "Projectile", "Spaceship"], function(GravityWell, Project
     var avy = objectA.vy;
     var bvx = objectB.vx;
     var bvy = objectB.vy;
-    
     var am = objectA.mass;
     var bm = objectB.mass;
     var amassdiff = am-bm;
     var bmassdiff = -amassdiff;
     var masssum = am+bm;
   
-    var Cr = 0.9999999;
     
-    function the_a_formula(u_a, u_b) {
-      return (Cr * bm *(u_b-u_a)+am*u_a+bm*u_b) / masssum;
-    }
-    function the_b_formula(u_a, u_b) {
-      return (Cr * am *(u_a-u_b)+am*u_a+bm*u_b) / masssum;
-    }
   
-    objectA.vx = the_a_formula(avx, bvx);
-    objectA.vy = the_a_formula(avy, bvy);
-    objectB.vx = the_b_formula(avx, bvx);
-    objectB.vy = the_b_formula(avy, bvy);
+    objectA.vx = (avx * amassdiff + (2 * bm * bvx)) / masssum;
+    objectA.vy = (avy * amassdiff + (2 * bm * bvy)) / masssum;
+    objectB.vx = (bvx * bmassdiff + (2 * am * avx)) / masssum;
+    objectB.vy = (bvy * bmassdiff + (2 * am * avy)) / masssum;
+    
+    objectA.x += objectA.vx;//
+    objectA.y += objectA.vy;
+    objectB.x += objectB.vx;
+    objectB.y += objectB.vy;
   }
   // http://c2.com/cgi/wiki?DotProductInManyProgrammingLanguages
   // not used actually

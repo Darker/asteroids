@@ -219,7 +219,7 @@ requirejs(["GravityWell", "Spaceship", "Projectile", "ObjectManager", "bounce_fu
     }
     if(!running && objectMan.array.length>0) {
       runSimulation();
-      //RandomAsteroid(objectMan);
+      RandomAsteroid(objectMan);
     }
   });
   

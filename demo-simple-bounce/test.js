@@ -49,7 +49,7 @@ requirejs(deps, (ObjectDrawer, GravityWell, Spaceship, Projectile)=>{
       GravityWell: GravityWell, Spaceship: Spaceship, Projectile: Projectile
     };
 
-    var DRAWER = new ObjectDrawer();
+    this.DRAWER = new ObjectDrawer();
     DRAWER.createScreen();
     DRAWER.drawLoop();
 
@@ -86,14 +86,14 @@ requirejs(deps, (ObjectDrawer, GravityWell, Spaceship, Projectile)=>{
           worker.postMessage({name:"create", data: array.buffer}, [array.buffer]);
           //console.log(spawnSpeed);
         }
-        spawnOrigin = null;
+        
       }
+      spawnOrigin = null;
       if(dragOriginalPoint) {
         e.preventDefault();
         e.cancelBubble = true;
         // Always disable draging mode
         dragOriginalPoint = null;
-        return false;
       }
     });
     DRAWER.renderer.view.addEventListener("contextmenu", function(e){
@@ -114,7 +114,7 @@ requirejs(deps, (ObjectDrawer, GravityWell, Spaceship, Projectile)=>{
       }
     });
     DRAWER.renderer.view.addEventListener("mouseout", function(e){
-      dragOriginalPoint = null;
+      dragOriginalPoint = spawnOrigin = null;
     });
     var graphics = new ObjectDrawer.PIXI.Graphics();
     DRAWER.stage.addChild(graphics);
@@ -186,7 +186,7 @@ requirejs(deps, (ObjectDrawer, GravityWell, Spaceship, Projectile)=>{
      //console.log(DRAWER.zoom);
     });
     
-    var objects = {};
+    var objects = this.objects = {};
     var ship;
     
     function canvasToGameCoords(x, y) {
@@ -208,7 +208,15 @@ requirejs(deps, (ObjectDrawer, GravityWell, Spaceship, Projectile)=>{
     //objs.push(ship = new GravityWell(600, 100, 20000, asteroid, DRAWER.stage));
     //objs.push(ship = new Spaceship(990, 470, 1000000, ObjectDrawer.textures.spaceship, DRAWER.stage));
     //DRAWER.focusPoint = new ObjectDrawer.FocusPointObject(ship);
-    
+/*
+requirejs(["ObjectDrawer"], (ObjectDrawer)=>{
+  for(var i in objects) {
+    if(objects[i].mass>=1e8) {
+      DRAWER.focusPoint = new ObjectDrawer.FocusPointObject(objects[i]);
+    } 
+  }
+});
+*/
     window.createShip = function() {
       if(!ship) {
         var focus = DRAWER.focusPoint || {x:0, y:0};
