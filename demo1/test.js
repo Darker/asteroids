@@ -185,6 +185,25 @@ requirejs(deps, (ObjectDrawer, GravityWell, Spaceship, Projectile)=>{
     //objs.push(ship = new Spaceship(990, 470, 1000000, ObjectDrawer.textures.spaceship, DRAWER.stage));
     //DRAWER.focusPoint = new ObjectDrawer.FocusPointObject(ship);
     
+    window.createShip = function() {
+      if(!ship) {
+        var focus = DRAWER.focusPoint || {x:0, y:0};
+        
+        ship = new Spaceship(focus.x, focus.y, 1000000, ObjectDrawer.textures.spaceship, DRAWER.stage);
+        ship.id = ++MAX_ID;
+        objects[ship.id]=ship;
+        
+        var array = ship.saveToArray();
+        worker.postMessage({name:"create", data: array.buffer, constructors: ["Spaceship"]}, [array.buffer]);
+        
+        DRAWER.focusPoint = new ObjectDrawer.FocusPointObject(ship);
+        return ship;
+      }
+      else {
+        throw new Error("Ship already exists!");
+      }
+    }
+    
     for(var i=0; i<objs.length; i++) {
       objects[objs[i].id] = objs[i];
     }
