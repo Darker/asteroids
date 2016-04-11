@@ -41,6 +41,7 @@ requirejs(["GravityWell", "Spaceship", "Projectile", "ObjectManager", "bounce_fu
       last = now;
       var destroy;
       var objects = objectMan.array;
+      var doGravity = GravityWell.prototype.G!=0;
       for(var i=0,l=objects.length; i<l; i++) {
         var obj = objects[i]; 
         
@@ -69,12 +70,14 @@ requirejs(["GravityWell", "Spaceship", "Projectile", "ObjectManager", "bounce_fu
           
           var dist = Math.sqrt(distSq);
           if(dist > radiusSum) {
-            var a = obj.acceleration(distSq, obj2.mass);
-            if(a!=0) {
-              a *= dt;
-              var angle = obj.angleTo(obj2);
-              obj.accelerate(angle, a);
-              objects[j].accelerate(angle+Math.PI, a);
+            if(doGravity) {
+              var a = obj.acceleration(distSq, obj2.mass);
+              if(a!=0) {
+                a *= dt;
+                var angle = obj.angleTo(obj2);
+                obj.accelerate(angle, a);
+                objects[j].accelerate(angle+Math.PI, a);
+              }
             }
           }
           else {
@@ -83,7 +86,7 @@ requirejs(["GravityWell", "Spaceship", "Projectile", "ObjectManager", "bounce_fu
             var hitVelocityMagSq = hitVelocity[0]*hitVelocity[0]+hitVelocity[1]*hitVelocity[1];
             //console.log("Hit velocity squared: ", hitVelocityMagSq, " Mass: ", obj2.mass*obj2.mass/100000000000);
             // hitVelocityMagSq>obj2.mass*obj2.mass/100000000000 && obj2.mass>800
-            if(hitVelocityMagSq>0.00005 && !(obj2 instanceof Projectile)) {
+            if(hitVelocityMagSq>0.00000005 && !(obj2 instanceof Projectile)) {
               bounce_function(obj, obj2);
             }
             else {
@@ -202,12 +205,21 @@ requirejs(["GravityWell", "Spaceship", "Projectile", "ObjectManager", "bounce_fu
             obj[e.data.actionName].apply(obj, args);
           }
       break;
+      case "g-constant" : 
+          GravityWell.prototype.G = data;
+          console.log("Setting G to: ", data);
+      break;
+      case "bounce-fn" :
+          //console.log("Evaluating code: ", "(()=>{\n"+e.data.fn+"\n  return bounce;\n})()"); 
+          bounce_function = eval("(()=>{\n"+e.data.fn+"\n  return bounce;\n})()");
+          console.log("Bounce function updated.");
+      break;
       default:
         console.error("Unknown message:", e.data.name);
     }
     if(!running && objectMan.array.length>0) {
       runSimulation();
-      RandomAsteroid(objectMan);
+      //RandomAsteroid(objectMan);
     }
   });
   

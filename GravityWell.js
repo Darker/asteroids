@@ -49,7 +49,6 @@ define([], function() {
       radius = distanceSq.radius;
       distanceSq = (this.x-distanceSq.x)*(this.x-distanceSq.x)+(this.y-distanceSq.y)*(this.y-distanceSq.y);
     }
-    //console.log(Math.sqrt(dist) ," > ", (this.radius+object.radius));
     if(distanceSq > 0)
       return (this.G*this.mass*mass) / distanceSq;
     else

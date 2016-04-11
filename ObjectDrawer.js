@@ -7,8 +7,8 @@ define(['pixi'], function(PIXI) {
   }
   
   ObjectDrawer.prototype.constructor = ObjectDrawer;
+  ObjectDrawer.PIXI = PIXI;
   ObjectDrawer.prototype.createScreen = function() {
-
     this.fitScreen();
     this.renderer = PIXI.autoDetectRenderer(this.width, this.height,{backgroundColor : 0x0});  
     window.addEventListener("resize", this.fitScreen);
@@ -39,6 +39,9 @@ define(['pixi'], function(PIXI) {
     if(this.focusPoint) {
       this.stage.pivot.x = this.focusPoint.x;
       this.stage.pivot.y = this.focusPoint.y;
+    }
+    if(this.onDraw) {
+      this.onDraw();
     }
     this.renderer.render(this.stage);
     requestAnimationFrame(this.drawLoop);
