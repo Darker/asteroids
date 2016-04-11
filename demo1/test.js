@@ -159,7 +159,7 @@ requirejs(deps, (ObjectDrawer, GravityWell, Spaceship, Projectile)=>{
      //console.log(e, (e.detail ? e.detail * (-1) : e.wheelDelta / 120)); 
      var dir = Math.sign(e.deltaY);
      DRAWER.zoom = dir>0?DRAWER.zoom*1.5:DRAWER.zoom/1.5;
-     console.log(DRAWER.zoom);
+     //console.log(DRAWER.zoom);
     });
     
     var objects = {};
@@ -272,6 +272,8 @@ requirejs(deps, (ObjectDrawer, GravityWell, Spaceship, Projectile)=>{
               worker.postMessage({name: "g-constant", data: this.value*1});
             });
             worker.postMessage({name: "g-constant", data: document.getElementById("g_const").value*1});
+            // fire event to window scope
+            window.dispatchEvent(new CustomEvent('simulation-started', {detail: {worker:worker}}));
         break;
         default:
           console.error("Unknown message:", e.data.name);
@@ -294,7 +296,7 @@ requirejs(deps, (ObjectDrawer, GravityWell, Spaceship, Projectile)=>{
     setInterval(localSimulation, 50);
     
     window.addEventListener("bounce-fn-changed", (e)=>{
-      worker.postMessage({name:"bounce-fn", func: e.detail.fn});
+      worker.postMessage({name:"bounce-fn", fn: e.detail.fn});
     });
     /* Returns pixel coordinates according to the pixel that's under the mouse cursor**/
     HTMLCanvasElement.prototype.relativeCoords = function(event) {

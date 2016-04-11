@@ -79,10 +79,12 @@
           // this happens when you copy paste code and you think it will solve problems
           //viewportMargin: Infinity
         });
-        
+        // remember whether something was loaded in the editor already
+        var value_filled = false;
         // Fill editor with code
         if(localStorage["bounce_function"]) {
           editor.setValue(localStorage["bounce_function"]); 
+          value_filled = true;
         } else {
           var oReq = new XMLHttpRequest();
           oReq.addEventListener("load", function() {
@@ -93,6 +95,7 @@
               "// to reset the editor to default, use `delete localStorage[\"bounce_function\"]`.\n"+
               match[1].replace(/^  /mg, "")
             );
+            value_filled = true;
           });
           oReq.open("GET", "bounce_function.js");
           oReq.send();
@@ -100,14 +103,31 @@
         // yeah, this also fires when the editor is being filed with code initally. 
         // If information about how much I care was a variable it would be a null pointer
         editor.on("change", function() {
-          var val;
-          localStorage["bounce_function"] = editor.getValue();
-          try {
-            eval(val);
-            window.dispatchEvent(new CustomEvent('bounce-fn-changed', { 'detail': {fn:val} }));
-          } catch(e) {}
+          var val = editor.getValue();
+          localStorage["bounce_function"] = val;
+          updateFunction(val);
+        });
+        // Update function on page load
+        window.addEventListener("simulation-started", function(e) {
+          if(value_filled) 
+            updateFunction(editor.getValue());
         });
         
+        function updateFunction(fnDataString) {
+          try {
+            eval(fnDataString);
+            if(typeof bounce=="function") {
+              window.dispatchEvent(new CustomEvent('bounce-fn-changed', {detail: {fn:fnDataString}}));
+            }
+            else {
+              console.error("Bounce function was removed, nothing will be sent to worker.");
+            }
+          } catch(e) {
+            console.error("Error in script input: ", e);
+          }
+        }
+        
+        // Editor resizing
         var resizeDiv = editor.getWrapperElement().querySelector("div.CodeMirror-scrollbar-filler");
         resizeDiv.style.cursor = "nwse-resize";
         var resizeStart = null;
@@ -116,6 +136,8 @@
           e.preventDefault();
           return false;
         });
+        
+        
         
         
   })();
