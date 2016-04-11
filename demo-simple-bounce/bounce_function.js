@@ -12,7 +12,7 @@ define(['GravityWell', "Projectile", "Spaceship"], function(GravityWell, Project
     var bmassdiff = -amassdiff;
     var masssum = am+bm;
   
-    var Cr = 0.9999999;
+    var Cr = 0.75;
     
     function the_a_formula(u_a, u_b) {
       return (Cr * bm *(u_b-u_a)+am*u_a+bm*u_b) / masssum;

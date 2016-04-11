@@ -42,7 +42,7 @@ requirejs(["GravityWell", "Spaceship", "Projectile", "ObjectManager", "bounce_fu
       var destroy;
       var objects = objectMan.array;
       var doGravity = GravityWell.prototype.G!=0;
-      for(var i=0,l=objects.length; i<l; i++) {
+      for(var i=0,l=objects.length; i<l; ++i) {
         var obj = objects[i]; 
         
         if(obj.mass<=0) {
@@ -52,7 +52,7 @@ requirejs(["GravityWell", "Spaceship", "Projectile", "ObjectManager", "bounce_fu
         // noclip means object can pass through other objs
         //if(obj.noclip && now-obj.noclip<0)
         //  continue;
-        for(var j=i+1,l=objects.length; j<l; j++) {
+        for(var j=i+1,l=objects.length; j<l; ++j) {
           
           var obj2 = objects[j];
           if(obj2.mass<=0) {
@@ -219,22 +219,52 @@ requirejs(["GravityWell", "Spaceship", "Projectile", "ObjectManager", "bounce_fu
     }
     if(!running && objectMan.array.length>0) {
       runSimulation();
-      RandomAsteroid(objectMan);
+      //RandomAsteroid(objectMan);
     }
   });
   
   function RandomAsteroid(manager) {
+    var largestBody = null;
+    var largestBodyMass = 0;
+    var largestBodyTime = 0;
+    var spawnx = 0;
+    var spawny = 0;
     function randomize() {
-      if(manager.array.length<500) {
-        var obj = new GravityWell(Math.random()*5000-2500, Math.random()*5000-2500, Math.random()*1000000+10000);
-        obj.vx = (-1*obj.x)/Math.abs(obj.x*300)+Math.random()*0.001;
-        obj.vy = (-1*obj.y)/Math.abs(obj.y*300)+Math.random()*0.001;
+      if(manager.array.length<400) {
+        if(largestBody) {
+          spawnx = largestBody.x;
+          spawny = largestBody.y;
+        }
+      
+        var obj = new GravityWell(spawnx+Math.random()*5000-2500, spawny+Math.random()*5000-2500, Math.random()*1000000+10000);
+        obj.vx = (-1*obj.x)/Math.abs(obj.x*300);
+        obj.vy = (-1*obj.y)/Math.abs(obj.y*300);
+        if(largestBody) {
+          var velocity = obj.orbitalVelocityCartesian(largestBody);
+          obj.vx = velocity.vx;
+          obj.vy = velocity.vy;
+        }
+        
         //obj.id = ++MAX_ID;
         manager.addObject(obj);
         setTimeout(randomize, Math.round(Math.random()*1000)+500);
       }
       else
         setTimeout(randomize, Math.round(Math.random()*3000)+1000);
+      var t = performance.now()
+        
+      if(largestBody == null || t-largestBodyTime>10000) {
+        var ar = manager.array;
+        largestBodyTime = t;
+        for(var i=0,l=ar.length; i<l; ++i) {
+          var b = ar[i];
+          var m = b.mass;
+          if(m > largestBodyMass) {
+            largestBodyMass = m;
+            largestBody = b;
+          }
+        }
+      }  
       //obj.saveToArray(0, array);
       //target.postMessage({name:"create", data: array.buffer}, [array.buffer]);
       //objects[obj.id] = obj;
