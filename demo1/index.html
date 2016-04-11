@@ -7,10 +7,14 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/codemirror.css" />
   <style>
     body, html {margin: 0; padding: 0}
-    #fields {
+    div#fields {
       position: fixed;
       top: 5px;
       left: 30px;
+      margin: 0px;
+      padding: 0px;
+    }
+    div#fields table{
       color: white;
       font-family: 'Courier new', 'Courier old', 'Grandma Courier', 'Marie Curie';
     }
@@ -19,8 +23,14 @@
       color: white;
       border: 1px solid #BBB;
     }
-    #fields td span {
+    #fields table td span {
       pointer-events: none;
+    }
+    span.help {
+      pointer-events: none;
+      font-size: 9pt;
+      color: white;
+      font-family: "The Simpsons";
     }
     
     div#editor {
@@ -49,13 +59,15 @@
 
   </head>
   <body>
-  <table id="fields">
-    <tr><td><span>Game speed:</span></td><td><input type="text" value="5000" id="speedRatio" /></td></tr>
-    <tr><td><span>New object velocity ratio:</span></td><td><input type="text" value="1" id="velocity" /></td></tr>
-    <tr><td><span>New object mass:</span></td><td><input type="text" value="50000" id="mass" /></td></tr>
-    <tr><td><span>G constant:</span></td><td><input type="text" value="6.674e-11" id="g_const" /></td></tr>
-  </table>
-  
+  <div id="fields">
+    <table>
+      <tr><td><span>Game speed:</span></td><td><input type="text" value="5000" id="speedRatio" /></td></tr>
+      <tr><td><span>New object velocity ratio:</span></td><td><input type="text" value="1" id="velocity" /></td></tr>
+      <tr><td><span>New object mass:</span></td><td><input type="text" value="50000" id="mass" /></td></tr>
+      <tr><td><span>G constant:</span></td><td><input type="text" value="6.674e-11" id="g_const" /></td></tr>
+    </table>
+    <span class="help">Left-lick to add object, drag to set speed. Right-drag to pan, scroll to zoom.</span> 
+  </div>
   <div id="editor">
   <div class="dragArea">The bounce function</div>
   <textarea id="code" name="code"></textarea>

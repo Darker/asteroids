@@ -116,6 +116,30 @@ requirejs(deps, (ObjectDrawer, GravityWell, Spaceship, Projectile)=>{
     DRAWER.renderer.view.addEventListener("mouseout", function(e){
       dragOriginalPoint = null;
     });
+    var graphics = new ObjectDrawer.PIXI.Graphics();
+    DRAWER.stage.addChild(graphics);
+    DRAWER.onDraw = function() {
+        graphics.clear();
+        if(spawnOrigin!=null) {
+            var stage = this.stage;
+            var scale = this.stage.scale;
+            
+            graphics.lineStyle(2/stage.scale.x, 0xFF0000);
+            var x = (spawnOrigin[0]-this.renderer.width/2)/stage.scale.x+stage.pivot.x;
+            var y = (spawnOrigin[1]-this.renderer.height/2)/stage.scale.y+stage.pivot.y;
+    
+            graphics.moveTo(x-10/scale.x,y);
+            graphics.lineTo(x+10/scale.x, y);
+            graphics.moveTo(x,y-10/scale.x);
+            graphics.lineTo(x, y+10/scale.x);
+            if(spawnSpeed!=null) {
+              graphics.moveTo(x,y);
+              graphics.lineStyle(1/stage.scale.x, 0xFF0000);
+              var speedPoint = canvasToGameCoords(spawnSpeed[0]+spawnOrigin[0], spawnSpeed[1]+spawnOrigin[1]);
+              graphics.lineTo(speedPoint.x, speedPoint.y);
+            } 
+        }
+    }
     window.addEventListener("keydown", function(e) {
       //console.log(e);
       var key = e.keyCode;
