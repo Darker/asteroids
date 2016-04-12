@@ -117,8 +117,8 @@
                 var match = this.responseText.match(/SRC_START[\n\r]+([\s\S]*?)[\n\r]+\/\/SRC_END/i);
                 editor.setValue(
                   "// Do not change the function name or it won't work!\n"+
-                  "// All changes are saved in localStorage[\"bounce_function\"] instantly\n"+
-                  "// to reset the editor to default, use `delete localStorage[\"bounce_function\"]`.\n"+
+                  "// All changes are saved in localStorage[\""+SCRIPT_NAME+"\"] instantly\n"+
+                  "// to reset the editor to default, use `delete localStorage[\""+SCRIPT_NAME+"\"]`.\n"+
                   match[1].replace(/^  /mg, "")
                 );
                 value_filled = true;
