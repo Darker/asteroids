@@ -1,0 +1,210 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=windows-1250">
+  <meta name="generator" content="PSPad editor, www.pspad.com">
+  <title>Asteroids</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/codemirror.css" />
+  <style>
+    body, html {margin: 0; padding: 0}
+    div#fields {
+      position: fixed;
+      top: 5px;
+      left: 30px;
+      margin: 0px;
+      padding: 0px;
+    }
+    div#fields table{
+      color: white;
+      font-family: 'Courier new', 'Courier old', 'Grandma Courier', 'Marie Curie';
+    }
+    #fields input[type="text"] {
+      background-color: rgba(0,0,0,0.5);
+      color: white;
+      border: 1px solid #BBB;
+    }
+    #fields table td span {
+      pointer-events: none;
+    }
+    span.help {
+      pointer-events: none;
+      font-size: 9pt;
+      color: white;
+      font-family: "The Simpsons";
+    }
+    
+    div#editor {
+      opacity: 0.3;
+      position: fixed;
+      top:0px;
+      right:0px;
+      border: 2px solid gray;
+      width: 50em;
+    }
+    
+    div#editor div.dragArea {
+      cursor: move;
+      color: white;
+      background: #999;
+    }
+    div#editor:hover {
+      opacity: 1;
+    }
+.CodeMirror {
+  height: 440px;
+}
+    
+  </style>
+  
+
+  </head>
+  <body>
+  <div id="fields">
+    <table>
+      <tr><td><span>Game speed:</span></td><td><input type="text" value="5000" id="speedRatio" /></td></tr>
+      <tr><td><span>New object velocity ratio:</span></td><td><input type="text" value="1" id="velocity" /></td></tr>
+      <tr><td><span>New object mass:</span></td><td><input type="text" value="50000" id="mass" /></td></tr>
+      <tr><td><span>G constant:</span></td><td><input type="text" value="6.674e-11" id="g_const" /></td></tr>
+    </table>
+    <span class="help">Left-lick to add object, drag to set speed. Right-drag to pan, scroll to zoom.</span> 
+  </div>
+  <div id="editor">
+  <div class="dragArea">The bounce function</div>
+  <textarea id="code" name="code"></textarea>
+  </div>
+
+   <!-- I wanted to use requirejs to load this gorram' crap but the crap won't frakkin' load. -->
+       <!-- no really, I even asked a nice question on SO. It just doesn't work with requirejs -->
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/codemirror.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/mode/javascript/javascript.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/comment/continuecomment.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/edit/matchbrackets.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/comment/comment.js"></script> 
+  <script>
+  var params = {showEditor: true, spawnShip: false};
+  if(location.search) {
+    var data = decodeURIComponent(location.search).substr(1);
+    try {
+      var params_url = JSON.parse(data);
+      for(var name in params_url) {
+        params[name] = params_url[name];
+      }
+    }
+    catch(e) {
+      console.error("Given URL params are not valid JSON. The data: ", data);
+    }
+  }
+  if(params.showEditor) {
+      (()=>{
+            var editor = window.editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+              lineNumbers: true,
+              matchBrackets: true,
+              continueComments: "Enter",
+              extraKeys: {"Ctrl-Q": "toggleComment"},
+              // this happens when you copy paste code and you think it will solve problems
+              //viewportMargin: Infinity
+            });
+            // remember whether something was loaded in the editor already
+            var value_filled = false;
+            // Fill editor with code
+            if(localStorage["bounce_function"]) {
+              editor.setValue(localStorage["bounce_function"]); 
+              value_filled = true;
+            } else {
+              var oReq = new XMLHttpRequest();
+              oReq.addEventListener("load", function() {
+                var match = this.responseText.match(/SRC_START[\n\r]+([\s\S]*?)[\n\r]+\/\/SRC_END/i);
+                editor.setValue(
+                  "// Do not change the function name or it won't work!\n"+
+                  "// All changes are saved in localStorage[\"bounce_function\"] instantly\n"+
+                  "// to reset the editor to default, use `delete localStorage[\"bounce_function\"]`.\n"+
+                  match[1].replace(/^  /mg, "")
+                );
+                value_filled = true;
+              });
+              oReq.open("GET", "bounce_function.js");
+              oReq.send();
+            }
+            // yeah, this also fires when the editor is being filed with code initally. 
+            // If information about how much I care was a variable it would be a null pointer
+            editor.on("change", function() {
+              var val = editor.getValue();
+              localStorage["bounce_function"] = val;
+              updateFunction(val);
+            });
+            // Update function on page load
+            window.addEventListener("simulation-started", function(e) {
+              if(value_filled) 
+                updateFunction(editor.getValue());
+            });
+            
+            function updateFunction(fnDataString) {
+              try {
+                eval(fnDataString);
+                if(typeof bounce=="function") {
+                  window.dispatchEvent(new CustomEvent('bounce-fn-changed', {detail: {fn:fnDataString}}));
+                }
+                else {
+                  console.error("Bounce function was removed, nothing will be sent to worker.");
+                }
+              } catch(e) {
+                console.error("Error in script input: ", e);
+              }
+            }
+            
+            // Editor resizing
+            var resizeDiv = editor.getWrapperElement().querySelector("div.CodeMirror-scrollbar-filler");
+            resizeDiv.style.cursor = "nwse-resize";
+            var resizeStart = null;
+            resizeDiv.addEventListener("mousedown", function(e) {
+              alert("that doesn't work. I'm not sure how to get this editor to resize.\nSorry :(");
+              e.preventDefault();
+              return false;
+            });
+            
+            
+            
+            
+      })();
+      
+      var dragPoint = null;
+      var dragOriginalPosition = null;
+      var div = document.querySelector("#editor");
+      // this stinks a lot but I'm lazy and this is just for testing
+      // You know I probably coukld've used jquery UI for making dragable editor
+      // if I had 10 hours to get it running...
+      window.addEventListener("mousemove", function(e) {
+        if(dragPoint) {
+          div.style.left = (dragOriginalPosition[0]+(e.clientX-dragPoint[0])) +"px";
+          div.style.top  = (dragOriginalPosition[1]+(e.clientY-dragPoint[1])) +"px";
+        }
+      });
+      window.addEventListener("mouseout", function(e) {
+        if(e.target==null)
+          dragPoint = dragOriginalPosition = null;
+      });
+      window.addEventListener("mouseup", function(e) {
+        dragPoint = dragOriginalPosition = null;
+      });
+      
+      document.querySelector("#editor div.dragArea").addEventListener("mousedown", function(e) {
+        dragOriginalPosition = [div.getBoundingClientRect().left, div.getBoundingClientRect().top];
+        dragPoint = [e.clientX, e.clientY]; 
+        e.preventDefault();
+        return false;
+      });
+  }
+  else {
+    document.getElementById("editor").style.display = "none";
+  }
+  
+  if(params.spawnShip) {
+    window.addEventListener("simulation-started", function(e) {
+      window.createShip();
+    });
+  }
+  
+  </script>                                                                 <!--  put space between the dashes to comment out the script --> 
+  <script type="text/javascript" data-main="test.js" src="require.js"></script>   <!-- empty comment. Did you knwo comments are part of DOM? -->  
+  </body>
+</html>
