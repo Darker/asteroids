@@ -94,6 +94,7 @@
       console.error("Given URL params are not valid JSON. The data: ", data);
     }
   }
+  const SCRIPT_NAME = "inelastic_bounce_function";
   if(params.showEditor) {
       (()=>{
             var editor = window.editor = CodeMirror.fromTextArea(document.getElementById("code"), {
@@ -107,8 +108,8 @@
             // remember whether something was loaded in the editor already
             var value_filled = false;
             // Fill editor with code
-            if(localStorage["bounce_function"]) {
-              editor.setValue(localStorage["bounce_function"]); 
+            if(localStorage[SCRIPT_NAME]) {
+              editor.setValue(localStorage[SCRIPT_NAME]); 
               value_filled = true;
             } else {
               var oReq = new XMLHttpRequest();
@@ -129,7 +130,7 @@
             // If information about how much I care was a variable it would be a null pointer
             editor.on("change", function() {
               var val = editor.getValue();
-              localStorage["bounce_function"] = val;
+              localStorage[SCRIPT_NAME] = val;
               updateFunction(val);
             });
             // Update function on page load
