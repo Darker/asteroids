@@ -54,11 +54,40 @@ define([], function() {
     else
       return 0;
   }
+  /**
+   * Returns velocity required for this object to orbit `targetBody`.
+   * I'm not sure what exactly should happen when `targetBody` is lighter than 
+   * this object.
+   * The return value scalar velocity. The angle needs to be calculated.
+   *      **/        
+  GravityWell.prototype.orbitalVelocity = function(targetBody) {
+    return Math.sqrt((this.G * (this.mass + targetBody.mass))/this.dist(targetBody)); 
+  }
+  /** Returns orbital velocity as {vx: ..., vy: ...} **/
+  GravityWell.prototype.orbitalVelocityCartesian = function(targetBody) {
+    var v = this.orbitalVelocity(targetBody);
+    var angle = this.angleTo(targetBody);
+    // turn angle by 90 degrees
+    angle += Math.PI/2;
+    return {vx: v*Math.cos(angle), vy: v*Math.sin(angle)};
+  }
+  /** Immediatelly sets the velocity as to orbit given body **/
+  GravityWell.prototype.orbitAround = function(targetBody) {
+    var v = this.orbitalVelocity(targetBody);
+    var angle = this.angleTo(targetBody);
+    // turn angle by 90 degrees
+    angle += Math.PI/2;
+    this.vx = v*Math.cos(angle)+targetBody.vx;
+    this.vy = v*Math.sin(angle)+targetBody.vy;
+  }
   GravityWell.prototype.angleTo = function(object) {
     return Math.atan2(-this.y+object.y, -this.x+object.x);
   }      
   GravityWell.prototype.distSq = function(object) {
     return (this.x-object.x)*(this.x-object.x)+(this.y-object.y)*(this.y-object.y)
+  }  
+  GravityWell.prototype.dist = function(object) {
+    return Math.sqrt(this.distSq(object));
   }  
   GravityWell.prototype.accelerate = function(direction, magnitude) {
     var deltaV = magnitude/this.mass;

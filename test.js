@@ -49,7 +49,7 @@ requirejs(deps, (ObjectDrawer, GravityWell, Spaceship, Projectile)=>{
       GravityWell: GravityWell, Spaceship: Spaceship, Projectile: Projectile
     };
 
-    var DRAWER = new ObjectDrawer();
+    this.DRAWER = new ObjectDrawer();
     DRAWER.createScreen();
     DRAWER.drawLoop();
 
@@ -86,14 +86,14 @@ requirejs(deps, (ObjectDrawer, GravityWell, Spaceship, Projectile)=>{
           worker.postMessage({name:"create", data: array.buffer}, [array.buffer]);
           //console.log(spawnSpeed);
         }
-        spawnOrigin = null;
+        
       }
+      spawnOrigin = null;
       if(dragOriginalPoint) {
         e.preventDefault();
         e.cancelBubble = true;
         // Always disable draging mode
         dragOriginalPoint = null;
-        return false;
       }
     });
     DRAWER.renderer.view.addEventListener("contextmenu", function(e){
@@ -114,30 +114,52 @@ requirejs(deps, (ObjectDrawer, GravityWell, Spaceship, Projectile)=>{
       }
     });
     DRAWER.renderer.view.addEventListener("mouseout", function(e){
-      dragOriginalPoint = null;
+      dragOriginalPoint = spawnOrigin = null;
     });
     var graphics = new ObjectDrawer.PIXI.Graphics();
     DRAWER.stage.addChild(graphics);
     DRAWER.onDraw = function() {
         graphics.clear();
+        var stage = this.stage;
+        var scale = this.stage.scale;
         if(spawnOrigin!=null) {
-            var stage = this.stage;
-            var scale = this.stage.scale;
-            
             graphics.lineStyle(2/stage.scale.x, 0xFF0000);
             var x = (spawnOrigin[0]-this.renderer.width/2)/stage.scale.x+stage.pivot.x;
             var y = (spawnOrigin[1]-this.renderer.height/2)/stage.scale.y+stage.pivot.y;
     
             graphics.moveTo(x-10/scale.x,y);
             graphics.lineTo(x+10/scale.x, y);
-            graphics.moveTo(x,y-10/scale.x);
-            graphics.lineTo(x, y+10/scale.x);
+            graphics.moveTo(x,y-10/scale.y);
+            graphics.lineTo(x, y+10/scale.y);
             if(spawnSpeed!=null) {
               graphics.moveTo(x,y);
               graphics.lineStyle(1/stage.scale.x, 0xFF0000);
               var speedPoint = canvasToGameCoords(spawnSpeed[0]+spawnOrigin[0], spawnSpeed[1]+spawnOrigin[1]);
               graphics.lineTo(speedPoint.x, speedPoint.y);
             } 
+        }
+        if(ship) {
+          // Display required orbital velocity
+          if(!window.orbitObject) {
+            var largestMass = 1e6;
+            for(var id in objects) {
+              var b = objects[id];
+              var m = b.mass;
+              if(m > largestMass) {
+                largestMass = m;
+                window.orbitObject = b;
+              }
+            }
+          }
+          if(window.orbitObject) {
+            var orbitVector = ship.orbitalVelocityCartesian(window.orbitObject);
+            var diff = [orbitVector.vx-ship.vx, orbitVector.vy-ship.vy];
+            graphics.lineStyle(3/stage.scale.x, 0x00FF00);
+            
+            graphics.drawCircle(ship.x, ship.y, ship.radius);
+            graphics.moveTo(ship.x,ship.y);
+            graphics.lineTo(ship.x+diff[0]*3e3, ship.y+diff[1]*3e3);
+          }                                         
         }
     }
     window.addEventListener("keydown", function(e) {
@@ -186,7 +208,7 @@ requirejs(deps, (ObjectDrawer, GravityWell, Spaceship, Projectile)=>{
      //console.log(DRAWER.zoom);
     });
     
-    var objects = {};
+    var objects = this.objects = {};
     var ship;
     
     function canvasToGameCoords(x, y) {
@@ -198,9 +220,18 @@ requirejs(deps, (ObjectDrawer, GravityWell, Spaceship, Projectile)=>{
     
     // Creating objects 
     var objs = [];
-    var dd;
-    //objs.push(new GravityWell(400, 300, 1000000000, ObjectDrawer.textures.asteroid, DRAWER.stage));
-    //objs.push(dd = new GravityWell(100, 100, 2000000, ObjectDrawer.textures.asteroid, DRAWER.stage));
+    var moon;
+    var planet;
+    var rock;
+    objs.push(planet = new GravityWell(400, 300, 3e10, ObjectDrawer.textures.asteroid, DRAWER.stage));
+    objs.push(moon = new GravityWell(-220, -220, 5e8, ObjectDrawer.textures.asteroid, DRAWER.stage));
+    moon.orbitAround(planet);
+    
+    objs.push(rock = new GravityWell(-180, -180, 3e5, ObjectDrawer.textures.asteroid, DRAWER.stage));
+    rock.orbitAround(moon);
+    //var velocity = dd.orbitalVelocityCartesian(planet);
+    //dd.vx = velocity.vx;
+    //dd.vy = velocity.vy;
     //objs.push(dd = new GravityWell(10000000, 10000000, 7.34767309e22, textures.asteroid, DRAWER.stage));
     //dd.vx = -0.00001;
     //dd.vy = -0.000001;
@@ -208,7 +239,15 @@ requirejs(deps, (ObjectDrawer, GravityWell, Spaceship, Projectile)=>{
     //objs.push(ship = new GravityWell(600, 100, 20000, asteroid, DRAWER.stage));
     //objs.push(ship = new Spaceship(990, 470, 1000000, ObjectDrawer.textures.spaceship, DRAWER.stage));
     //DRAWER.focusPoint = new ObjectDrawer.FocusPointObject(ship);
-    
+/*
+requirejs(["ObjectDrawer"], (ObjectDrawer)=>{
+  for(var i in objects) {
+    if(objects[i].mass>=1e8) {
+      DRAWER.focusPoint = new ObjectDrawer.FocusPointObject(objects[i]);
+    } 
+  }
+});
+*/
     window.createShip = function() {
       if(!ship) {
         var focus = DRAWER.focusPoint || {x:0, y:0};
@@ -377,8 +416,14 @@ requirejs(deps, (ObjectDrawer, GravityWell, Spaceship, Projectile)=>{
         }
       );
     }
-});
-
+}); /*
+requirejs(["ObjectDrawer"], (ObjectDrawer)=>{
+  for(var i in objects) {
+    if(objects[i].mass>=1e8) {
+      DRAWER.focusPoint = new ObjectDrawer.FocusPointObject(objects[i]);
+    } 
+  }
+});   */
 /*
   [
         "//cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/codemirror.js",
