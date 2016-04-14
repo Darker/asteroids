@@ -233,10 +233,10 @@ requirejs(deps, (ObjectDrawer, GravityWell, Spaceship, Projectile)=>{
     
     
     objs.push(rock = new GravityWell(350, 200, 3e7, ObjectDrawer.textures.asteroid, DRAWER.stage));
-    rock.vx = 0.1;
+    rock.vx = 0.2;
     
-    objs.push(rock = new GravityWell(500, 220, 3e7, ObjectDrawer.textures.asteroid, DRAWER.stage));
-    rock.vx = -0.1;
+    objs.push(rock = new GravityWell(600, 220, 3e7, ObjectDrawer.textures.asteroid, DRAWER.stage));
+    rock.vx = -0.2;
     //var velocity = dd.orbitalVelocityCartesian(planet);
     //dd.vx = velocity.vx;
     //dd.vy = velocity.vy;
