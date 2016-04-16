@@ -81,7 +81,7 @@
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/edit/matchbrackets.js"></script>
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/addon/comment/comment.js"></script> 
   <script>
-  var params = {showEditor: true, spawnShip: false};
+  var params = {showEditor: false, spawnShip: false};
   if(location.search) {
     var data = decodeURIComponent(location.search).substr(1);
     try {
@@ -94,6 +94,7 @@
       console.error("Given URL params are not valid JSON. The data: ", data);
     }
   }
+  const SCRIPT_NAME = "inelastic_bounce_function";
   if(params.showEditor) {
       (()=>{
             var editor = window.editor = CodeMirror.fromTextArea(document.getElementById("code"), {
@@ -107,8 +108,8 @@
             // remember whether something was loaded in the editor already
             var value_filled = false;
             // Fill editor with code
-            if(localStorage["bounce_function"]) {
-              editor.setValue(localStorage["bounce_function"]); 
+            if(localStorage[SCRIPT_NAME]) {
+              editor.setValue(localStorage[SCRIPT_NAME]); 
               value_filled = true;
             } else {
               var oReq = new XMLHttpRequest();
@@ -116,8 +117,8 @@
                 var match = this.responseText.match(/SRC_START[\n\r]+([\s\S]*?)[\n\r]+\/\/SRC_END/i);
                 editor.setValue(
                   "// Do not change the function name or it won't work!\n"+
-                  "// All changes are saved in localStorage[\"bounce_function\"] instantly\n"+
-                  "// to reset the editor to default, use `delete localStorage[\"bounce_function\"]`.\n"+
+                  "// All changes are saved in localStorage[\""+SCRIPT_NAME+"\"] instantly\n"+
+                  "// to reset the editor to default, use `delete localStorage[\""+SCRIPT_NAME+"\"]`.\n"+
                   match[1].replace(/^  /mg, "")
                 );
                 value_filled = true;
@@ -129,7 +130,7 @@
             // If information about how much I care was a variable it would be a null pointer
             editor.on("change", function() {
               var val = editor.getValue();
-              localStorage["bounce_function"] = val;
+              localStorage[SCRIPT_NAME] = val;
               updateFunction(val);
             });
             // Update function on page load

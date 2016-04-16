@@ -7,6 +7,7 @@ if(typeof define!="function") {
 
 define([], function() {
   var idS = new UniqueIdGenerator();
+  var _2PI = 2*Math.PI
   function GravityWell(x,y,mass,texture, stage) {
     // Radians
     this.rotation = 0;
@@ -98,6 +99,7 @@ define([], function() {
     //this.sprite.rotation = direction+Math.PI/2;
   }
   GravityWell.prototype.consume = function(object) {
+    console.log(this.constructor.name+"#"+this.id+" consumed "+object.constructor.name+"#"+object.id);
     if(object.isProjectile) {
       this.mass -= 10000000;
       this.vx += object.vx/(this.mass);
@@ -137,8 +139,6 @@ define([], function() {
     this.vy += this.ay*dt;
     
     this.rotationSpeed += this.ar*dt;
-    if(this.ar==0 && this.rotationSpeed!=0)
-      this.rotationSpeed -= 0.03*this.rotationSpeed;
       //this.rotationSpeed = 0;
     //this.rotationSpeed -= 0.000002*Math.sign(this.rotationSpeed);
   
@@ -146,6 +146,9 @@ define([], function() {
     this.x += this.vx*dt;
     this.y += this.vy*dt;
     this.rotation += this.rotationSpeed*dt;
+    if(this.rotation>_2PI || this.rotation<-_2PI) {
+      this.rotation = this.rotation%_2PI;
+    }
   
     if(this.sprite) {
       this.sprite.position.x = this.x;
@@ -252,6 +255,13 @@ define([], function() {
   }
   GravityWell.prototype.toString = function() {
     return JSON.stringify(this);
+  }
+  GravityWell.prototype.logThrottle = function() {
+    var t = performance.now();
+    if(!this.lastLogMessage || t - this.lastLogMessage>100) {
+      console.log.apply(console, arguments);
+      this.lastLogMessage = t;
+    }
   }
   
   function UniqueIdGenerator(prefix) {

@@ -42,11 +42,11 @@ requirejs.onError = function(error) {
     console.error("Unexpected requirejs onError callback: ", error);
 }
 
-var deps = ['ObjectDrawer', 'GravityWell', 'Spaceship', 'Projectile'];
+var deps = ['ObjectDrawer', 'GravityWell', 'Spaceship', 'Projectile', "Rocket"];
 
-requirejs(deps, (ObjectDrawer, GravityWell, Spaceship, Projectile)=>{
+requirejs(deps, (ObjectDrawer, GravityWell, Spaceship, Projectile, Rocket)=>{
     var global_ctors = {
-      GravityWell: GravityWell, Spaceship: Spaceship, Projectile: Projectile
+      GravityWell: GravityWell, Spaceship: Spaceship, Projectile: Projectile, Rocket:Rocket
     };
 
     this.DRAWER = new ObjectDrawer();
@@ -163,7 +163,7 @@ requirejs(deps, (ObjectDrawer, GravityWell, Spaceship, Projectile)=>{
         }
     }
     window.addEventListener("keydown", function(e) {
-      //console.log(e);
+      console.log(e);
       var key = e.keyCode;
       if(key==38) {
         ship.forwardEngine(-1);
@@ -172,20 +172,10 @@ requirejs(deps, (ObjectDrawer, GravityWell, Spaceship, Projectile)=>{
         ship.rotationEngine(key==37?-1:1);
       }
       if(key==32 && ship) {
-        /*var angle = ship.rotation+Math.PI/2;
-        var obj = new Projectile(ship.x-(ship.radius+5)*Math.cos(angle), ship.y-(ship.radius+5)*Math.sin(angle), 1000, projectile, DRAWER.stage);
-        obj.id = ++MAX_ID;
-        objects[obj.id]=obj;
-        
-        var speed = -0.1;
-        var vx = speed*Math.cos(angle);
-        var vy = speed*Math.sin(angle);
-        ship.launchObject(obj, vx, vy);
-        
-        var array = obj.saveToArray();
-        console.log("Projectile: ", [obj.x, obj.y], "Ship: ", [ship.x, ship.y]);
-        worker.postMessage({name:"create", data: array.buffer, constructors:["Projectile"]}, [array.buffer]);  */ 
         worker.postMessage({name:"action", id: ship.id, actionName: "shoot", args: []});
+      }
+      if(key==88 && ship) {
+        worker.postMessage({name:"action", id: ship.id, actionName: "rocket", args: []});
       }
     });
     
@@ -223,12 +213,12 @@ requirejs(deps, (ObjectDrawer, GravityWell, Spaceship, Projectile)=>{
     var moon;
     var planet;
     var rock;
-    objs.push(planet = new GravityWell(400, 300, 3e10, ObjectDrawer.textures.asteroid, DRAWER.stage));
-    objs.push(moon = new GravityWell(-220, -220, 5e8, ObjectDrawer.textures.asteroid, DRAWER.stage));
-    moon.orbitAround(planet);
+    //objs.push(planet = new GravityWell(400, 300, 3e10, ObjectDrawer.textures.asteroid, DRAWER.stage));
+    //objs.push(moon = new GravityWell(-220, -220, 5e8, ObjectDrawer.textures.asteroid, DRAWER.stage));
+    //moon.orbitAround(planet);
     
-    objs.push(rock = new GravityWell(-180, -180, 3e5, ObjectDrawer.textures.asteroid, DRAWER.stage));
-    rock.orbitAround(moon);
+    //objs.push(rock = new GravityWell(-180, -180, 3e5, ObjectDrawer.textures.asteroid, DRAWER.stage));
+    //rock.orbitAround(moon);
     //var velocity = dd.orbitalVelocityCartesian(planet);
     //dd.vx = velocity.vx;
     //dd.vy = velocity.vy;
@@ -296,7 +286,7 @@ requirejs(["ObjectDrawer"], (ObjectDrawer)=>{
             for(var i=0,l=array.length; i<l; i+=GravityWell.SAVE_DATA_LENGTH) {
                 //var obj = new GravityWell();
                 var texture = "asteroid";
-                var ctor = ctors?global_ctors[ctors[i/GravityWell.SAVE_DATA_LENGTH]]:GravityWell;
+                var ctor = ctors?global_ctors[ctors[i%GravityWell.SAVE_DATA_LENGTH]]:GravityWell;
                 if(ctors) {
                   texture = ctor.prototype.textureName;
                 }
@@ -304,7 +294,7 @@ requirejs(["ObjectDrawer"], (ObjectDrawer)=>{
                 var obj = new ctor(0, 0, 0, ObjectDrawer.textures[texture], DRAWER.stage);
                 obj.id = array[i];
                 obj.loadFromArray(i, array);
-                console.log("[MAIN] Create ",obj, texture, ctor);
+                console.log("[MAIN] Worker created #"+obj.id, obj, texture, ctor);
                 objects[obj.id] = obj;
                 MAX_ID = obj.id;
             }

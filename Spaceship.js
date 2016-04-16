@@ -1,4 +1,4 @@
-define(["GravityWell", "Projectile"], function(GravityWell, Projectile) {
+define(["GravityWell", "Projectile", "Rocket"], function(GravityWell, Projectile, Rocket) {
   function Spaceship() {
     //var args = Array.prototype.splice.apply(arguments, 0, 0);
     GravityWell.apply(this, arguments);
@@ -21,6 +21,7 @@ define(["GravityWell", "Projectile"], function(GravityWell, Projectile) {
     //if(this.sprite) {
     //  this.updateSprite();
     //}
+    this.lastRocketTime = 0;
   }
   Spaceship.prototype = Object.create(GravityWell.prototype);
   Spaceship.prototype.constructor = Spaceship;
@@ -89,21 +90,38 @@ define(["GravityWell", "Projectile"], function(GravityWell, Projectile) {
     
     return changed;  
   }
-  
+  Spaceship.prototype.move = function(dt) {
+    if(this.ar==0 && this.rotationSpeed!=0)
+      this.rotationSpeed -= 0.03*this.rotationSpeed;
+    GravityWell.prototype.move.apply(this,arguments);
+  }
   Spaceship.prototype.shoot = function() {
     var angle = this.rotation+Math.PI/2;
     var obj = new Projectile(this.x-(this.radius+5)*Math.cos(angle), this.y-(this.radius+5)*Math.sin(angle), 1000);
     
-    //var speed = -0.1;
     var speed = -0.2;
     var vx = speed*Math.cos(angle);
     var vy = speed*Math.sin(angle);
     this.launchObject(obj, vx, vy);
     
-    //var array = obj.saveToArray();
-    //console.log("Projectile: ", [obj.x, obj.y], "Ship: ", [this.x, this.y]);
-    //worker.postMessage({name:"create", data: array.buffer, constructors:["Projectile"]}, [array.buffer]);   
     this.manager.addObject(obj);
+  }
+  Spaceship.prototype.rocket = function() {
+    var t = performance.now();
+    if(t-this.lastRocketTime <200) 
+      return false;
+    var angle = this.rotation;
+    var obj = new Rocket(this.x-(this.radius+5)*Math.cos(angle), this.y-(this.radius+5)*Math.sin(angle), 1000);
+    obj.rotation = this.rotation+Math.PI;
+    var speed = -0.02;
+    var vx = speed*Math.cos(angle);
+    var vy = speed*Math.sin(angle);
+    this.launchObject(obj, vx, vy);
+    
+    this.manager.addObject(obj);
+    // trigger cooldown
+    this.lastRocketTime = t;
+    return obj;
   }
   Spaceship.prototype.updateTextureScale = function() {
     var size = Math.max(5*this.radius,15);

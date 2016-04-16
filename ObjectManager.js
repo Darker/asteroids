@@ -13,7 +13,8 @@ define(["Spaceship"], function(Spaceship) {
     var byId = this.byId;
     for(var i=0,l=indexes.length; i<l; i++) {
       var obj = array[indexes[i]];
-      array.splice(indexes[i], 1);
+      array[indexes[i]] = null;
+      //array.splice(indexes[i], 1);
       delete byId[obj.id];
       ids.push(obj.id);
       obj.destroy();
@@ -23,6 +24,14 @@ define(["Spaceship"], function(Spaceship) {
     this.remote.postMessage({name:"destroy", data: array.buffer}, [array.buffer]);
     return ids;
   }
+  /*ObjectManager.prototype.destroyObject = function(obj) {
+    var index = this.array.indexOf(obj);
+    if(index!=-1) {
+      delete this.byId[obj.id];
+      this.array.splice(index, 1);    
+      obj.destroy();
+    }
+  }    */
   /** Creates new object and pushes it into remote target **/
   ObjectManager.prototype.addObject = function(obj) {
     obj.id = ++this.MAX_ID;

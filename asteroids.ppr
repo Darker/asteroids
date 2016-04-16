@@ -15,55 +15,28 @@ ProjectFilesOnly=0
 Nový projekt
 	+Složka
 		simulator.js
+		..\asteroids-pages\demo-elastic-bounce\bounce_function3.js
 [Open project files]
-0=test.js
-1=simulator.js
-2=GravityWell.js
-3=main.js
-4=index.html
-5=Spaceship.js
-6=Projectile.js
-7=ObjectManager.js
-8=ObjectDrawer.js
-9=bounce_function.js
-10=oldstuff\oldbounce.js
-11=..\..\odpad\levt fur ded\SmartSteamEmu.ini
+0=bounce_function.js
+1=test.js
+2=index.html
+3=GravityWell.js
+4=simulator.js
 [Selected Project Files]
 Main=
-Selected=ObjectManager.js
+Selected=simulator.js
+[bounce_function.js]
+TopLine=4
+Caret=22,88
 [test.js]
-TopLine=60
-Caret=8,72
-[simulator.js]
-TopLine=173
-Caret=41,209
-[GravityWell.js]
-TopLine=91
-Caret=38,43
-[main.js]
-TopLine=1
-Caret=1,9
+TopLine=406
+Caret=1,420
 [index.html]
-TopLine=38
-Caret=62,56
-[Spaceship.js]
-TopLine=1
-Caret=71,1
-[Projectile.js]
-TopLine=1
-Caret=44,20
-[ObjectManager.js]
 TopLine=1
 Caret=1,1
-[ObjectDrawer.js]
-TopLine=31
-Caret=6,69
-[bounce_function.js]
-TopLine=1
-Caret=32,7
-[oldstuff\oldbounce.js]
-TopLine=1
-Caret=1,2
-[..\..\odpad\levt fur ded\SmartSteamEmu.ini]
-TopLine=23
-Caret=20,60
+[GravityWell.js]
+TopLine=57
+Caret=23,86
+[simulator.js]
+TopLine=61
+Caret=54,106

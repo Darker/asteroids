@@ -3,7 +3,7 @@ define(["GravityWell"], function(GravityWell) {
     //var args = Array.prototype.splice.apply(arguments, 0, 0);
     GravityWell.apply(this, arguments);
     // max oeward backward acceleration
-    this.mass = 10000;
+    this.mass = 1000;
     this.calculateRadius();
     this.evaporationSpeed = 0.5;
     this.created = performance.now();

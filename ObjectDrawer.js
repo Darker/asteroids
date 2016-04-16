@@ -63,6 +63,7 @@ define(['pixi'], function(PIXI) {
     asteroid: PIXI.Texture.fromImage("asteroid.png"),
     spaceship: PIXI.Texture.fromImage("spaceship.png"),
     projectile: PIXI.Texture.fromImage("projectile_circle.png"),
+    rocket:  PIXI.Texture.fromImage("rocket.png"),
   }
   
   ObjectDrawer.FocusPoint = function(x, y) {

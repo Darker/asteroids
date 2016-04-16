@@ -17,11 +17,11 @@ requirejs.config({
 });
 
 
-requirejs(["GravityWell", "Spaceship", "Projectile", "ObjectManager", "bounce_function"],
-(GravityWell, Spaceship, Projectile, ObjectManager, bounce_function)=> {
-   global_ctors = {
-     GravityWell: GravityWell, Spaceship: Spaceship, Projectile: Projectile
-   };
+requirejs(["GravityWell", "Spaceship", "Projectile", "Rocket", "ObjectManager", "bounce_function"],
+(GravityWell, Spaceship, Projectile, Rocket, ObjectManager, bounce_function)=> {
+  var global_ctors = {
+      GravityWell: GravityWell, Spaceship: Spaceship, Projectile: Projectile, Rocket:Rocket
+  };
     
   var last = performance.now();
   var lastUpdate = 0;
@@ -44,7 +44,8 @@ requirejs(["GravityWell", "Spaceship", "Projectile", "ObjectManager", "bounce_fu
       var doGravity = GravityWell.prototype.G!=0;
       for(var i=0,l=objects.length; i<l; ++i) {
         var obj = objects[i]; 
-        
+        if(!obj)
+          continue;
         if(obj.mass<=0) {
           destroyObject(i);
           continue;
@@ -55,7 +56,7 @@ requirejs(["GravityWell", "Spaceship", "Projectile", "ObjectManager", "bounce_fu
         for(var j=i+1,l=objects.length; j<l; ++j) {
           
           var obj2 = objects[j];
-          if(obj2.mass<=0) {
+          if(!obj2 || obj2.mass<=0) {
             continue;
           }
           // noclip means object can pass through other objs
@@ -84,28 +85,28 @@ requirejs(["GravityWell", "Spaceship", "Projectile", "ObjectManager", "bounce_fu
             // Consume or split an object
             var hitVelocity = [obj.vx-obj2.vx, obj.vy-obj2.vy];
             var hitVelocityMagSq = hitVelocity[0]*hitVelocity[0]+hitVelocity[1]*hitVelocity[1];
+            var sizeRatio = obj.mass/obj2.mass;
             //console.log("Hit velocity squared: ", hitVelocityMagSq, " Mass: ", obj2.mass*obj2.mass/100000000000);
             // hitVelocityMagSq>obj2.mass*obj2.mass/100000000000 && obj2.mass>800
-            if(hitVelocityMagSq>0.00000005 && !(obj2 instanceof Projectile)) {
+            if((sizeRatio>0.01 && sizeRatio<100) && hitVelocityMagSq>0.0000005 && !(obj2 instanceof Projectile) && !(obj2 instanceof Rocket)) {
               bounce_function(obj, obj2);
             }
             else {
               var larger = obj.mass>obj2.mass?obj:obj2;
               var smaller = obj==larger?obj2:obj;
+              var index = obj==larger?j:i;
               // Mass transfer
                 // not yet
               //console.log(obj, "consumes", obj2);
-              if(obj instanceof Spaceship) {
-                obj2.consume(obj);
-                destroyObject(i);
+              if(larger instanceof Spaceship) {
+                smaller.consume(larger);
+                destroyObject(larger==obj?i:j);
               } else {
-                obj.consume(obj2);
-                destroyObject(j);
+                larger.consume(smaller);
+                destroyObject(index);
               }
-  
               //l--;j--;
-            }  
-            
+            } 
           }
         }
       }
@@ -133,9 +134,11 @@ requirejs(["GravityWell", "Spaceship", "Projectile", "ObjectManager", "bounce_fu
   
       for(var i=0,l=objects.length; i<l; i++) {
         var object = objects[i];
-        object.move(dt);
-        if(sendObjects) {
-          object.saveToArray(i*GravityWell.SAVE_DATA_LENGTH, sendObjects);
+        if(object) {
+          object.move(dt);
+          if(sendObjects) {
+            object.saveToArray(i*GravityWell.SAVE_DATA_LENGTH, sendObjects);
+          }
         }
       }
       
