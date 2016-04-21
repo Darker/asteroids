@@ -1,0 +1,42 @@
+[Config]
+Compilator.SaveAll=0
+Compilator.Capture=0
+Compilator.HideOutput=0
+Compilator.ProgSaveAll=0
+Compilator.ProgRunSelection=0
+Compilator.LogType=0
+DefaultCPIndex=0
+LogtoEnd=1
+DontOpen=0
+AbsolutePath=0
+FileFormat=0
+ProjectFilesOnly=0
+[Project tree]
+Nový projekt
+	+Složka
+		simulator.js
+		..\asteroids-pages\demo-elastic-bounce\bounce_function3.js
+[Open project files]
+0=bounce_function.js
+1=test.js
+2=index.html
+3=GravityWell.js
+4=simulator.js
+[Selected Project Files]
+Main=
+Selected=simulator.js
+[bounce_function.js]
+TopLine=4
+Caret=22,88
+[test.js]
+TopLine=406
+Caret=1,420
+[index.html]
+TopLine=1
+Caret=1,1
+[GravityWell.js]
+TopLine=57
+Caret=23,86
+[simulator.js]
+TopLine=61
+Caret=54,106
