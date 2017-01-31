@@ -198,8 +198,7 @@ requirejs(deps, (ObjectDrawer, GravityWell, Spaceship, Projectile, Rocket)=>{
      //console.log(DRAWER.zoom);
     });
     
-    var objects = this.objects = {};
-    var ship;
+
     
     function canvasToGameCoords(x, y) {
         return new PIXI.Point((x-DRAWER.renderer.width/2)/DRAWER.stage.scale.x+DRAWER.stage.pivot.x,
@@ -207,7 +206,8 @@ requirejs(deps, (ObjectDrawer, GravityWell, Spaceship, Projectile, Rocket)=>{
     }
 
     
-    
+    var objects = this.objects = {};
+    var ship;
     // Creating objects 
     var objs = [];
     var moon;
@@ -227,8 +227,8 @@ requirejs(deps, (ObjectDrawer, GravityWell, Spaceship, Projectile, Rocket)=>{
     //dd.vy = -0.000001;
     //objs.push(ship = new GravityWell(100, 500, 20000, asteroid, DRAWER.stage));
     //objs.push(ship = new GravityWell(600, 100, 20000, asteroid, DRAWER.stage));
-    //objs.push(ship = new Spaceship(990, 470, 1000000, ObjectDrawer.textures.spaceship, DRAWER.stage));
-    //DRAWER.focusPoint = new ObjectDrawer.FocusPointObject(ship);
+     objs.push(ship = new Spaceship(990, 470, 1000000, ObjectDrawer.textures.spaceship, DRAWER.stage));
+    DRAWER.focusPoint = new ObjectDrawer.FocusPointObject(ship);
 /*
 requirejs(["ObjectDrawer"], (ObjectDrawer)=>{
   for(var i in objects) {
