@@ -1,20 +1,26 @@
-Stavy:
+##States:
 $$
 [x, y, \varphi, v_x, v_y, v_{\varphi}]
 $$
 
-Vstupy:
+ - $\varphi$ stands for rotation
+ - $v_{\varphi}$ stands for angular momentum
+
+##Inputs:
 $$
 [F, M]
 $$
 
-Parametry:
+ - $F$ is the acceleration force, $\frac{F}{M}$ is acceleration
+ - $M$ is the angular acceleration force
+
+##Parameters:
 $$
 [m, J]
 $$
 
 
-Stavovy popis:
+##Transfer function:
 $$
 \dot{x} = v_x \\
 \dot{y} = v_y \\
@@ -23,5 +29,6 @@ $$
 \dot{v}_y = \frac{1}{m}F\sin(\varphi) \\
 \dot{v}_{\varphi} = \frac{1}{J}M \\
 $$
+
 
 http://ocw.mit.edu/courses/aeronautics-and-astronautics/16-30-feedback-control-systems-fall-2010/lecture-notes/MIT16_30F10_lec05.pdf
