@@ -1,0 +1,194 @@
+/** generic **/
+
+body, html {margin: 0; padding: 0;}
+
+.prettyButton {
+	text-transform: uppercase;
+	letter-spacing: 2px;
+	font-size: 12px;
+	padding: 10px 30px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border: 1px solid rgba(0,0,0,0.3);
+	border-bottom-width: 3px;
+  transition: background-color .3s linear;
+}
+.prettyButton[disabled] {
+  pointer-events: none;
+  background-color: #CDCDCD;
+  color: white;
+}
+
+/** static **/
+#connecting {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    margin: 0;
+    padding: 0; 
+}
+#connecting div.inner {
+    display: table-cell;
+    width: 100vw;
+    height: 100vh;
+    text-align: center;
+    vertical-align: middle;
+    margin: 0;
+    padding: 0;
+    
+    font-size: 20pt;
+    color: red;
+}
+/** Client window **/
+div.clientwindow.login div.nologin {
+  display: none;
+}
+div.clientwindow div.login {
+  display: none;
+}
+div.clientwindow.login div.login {
+  display: block;
+}
+
+/** Uplaoder **/
+div.uploader {
+  border: 2px dashed #6688FF;
+  padding: 5px;
+  border-radius: 20px;
+}
+div.uploader div.dnd {
+  font-size: 11pt;
+  text-align: center;
+}
+
+div.uploader.drop {
+  animation: redBlink .5s linear infinite;
+  border-color: red;
+}
+
+@keyframes redBlink {
+  50% {
+       box-shadow: inset 0px 0px 5px 1px red,
+                         0px 0px 5px 1px red
+       ;
+  }
+}
+/** START **/
+button.start {
+	color: #666;
+	background-color: #68E200;
+  display: block;
+  width: 100%;
+  margin: 3px 0px 3px 0px;
+}
+button.start:hover {
+  background-color: #34C100;
+}
+button.start:active {
+  background-color: #00AA00;
+  transition: background-color .0s linear;
+}
+/** statusbar **/
+div.status {
+  border-radius: 3px;
+  font-family: "Courier new";
+  padding: 3px;
+  margin: 4px 0 4px 0;
+}
+div.status.ok {
+  background-color: #C2E9FF;
+}
+div.status.error {
+  background-color: red;
+  color: yellow;
+}
+div.status.success {
+  background-color: #68E200;
+  color: black;
+}
+/** Filelist **/
+div.file {
+  padding: 3px;
+  margin: 1px 0 1px 0;
+  border: 1px solid black;
+  background-color: #3377FF;
+}
+
+div.file.updated {
+  animation: updatedFade .9s ease-in forwards;
+}
+div.file.error {
+  animation: errorFade .9s ease-in forwards;
+}
+@keyframes updatedFade {
+  0% { background-color: #33FF11; }
+}
+@keyframes errorFade {
+  0% { background-color: #FF0000; }
+}
+div.file div.buttons {
+  float: right;
+}
+div.file div.buttons button, div.file div.buttons div {
+  border: 1px solid black;
+  background-color: rgba(0,0,0,0.6);
+  font-family: "Courier new";
+  padding: 0;
+  margin: 0;
+  font-size: 13pt;
+  cursor: pointer;
+}
+
+div.file div.buttons .delete {
+  color: red;
+}
+div.file div.name {
+  float: left;
+}
+div.file p {
+  clear: both;
+}
+
+/** CSS loading animation **/
+.loader {
+  margin: 60px auto;
+  font-size: 10px;
+  position: relative;
+  text-indent: -9999em;
+  border-top: 1.1em solid rgba(255, 255, 255, 0.2);
+  border-right: 1.1em solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1.1em solid rgba(255, 255, 255, 0.2);
+  border-left: 1.1em solid #ffffff;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-animation: load8 1.1s infinite linear;
+  animation: load8 1.1s infinite linear;
+}
+.loader,
+.loader:after {
+  border-radius: 50%;
+  width: 10em;
+  height: 10em;
+}
+@-webkit-keyframes load8 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@keyframes load8 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
