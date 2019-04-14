@@ -1,6 +1,20 @@
 define([], ()=> {
   var angle360 = 2 * Math.PI;
   function ai(target) {
+    // Some docs:
+    /*
+      both `target` and `this` are of type GravityWell. They have these relevant properties:
+      
+        x, y     - x and y offset, read-only for the purpose of this algorithm
+        vx, vy   - velocities, also read only
+        ax, ay   - acceleration - obviously you cannot change acceleration of the target
+        rotation - rotation in radians (readonly)
+        rotationSpeed - angular velocity (readonly)
+        ar       - angular acceleration - change this to start spinning
+        
+      Some utility methods like `angleTo` can be seen in GravityWell.js
+    */
+
     var angleCurrent = this.rotation/*+Math.PI/2*/;
     
     var angleTo = this.angleTo(target);
