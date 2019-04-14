@@ -22,7 +22,9 @@ requirejs.config({
     },
     waitSeconds: 20   
 });
-
+setInterval(function() {
+    window.dispatchEvent(new Event("TEST"));
+}, 500);
 requirejs.onError = function(error) {
   if(error.requireModules)
     error.requireModules.forEach(function(name) {
